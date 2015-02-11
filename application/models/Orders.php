@@ -64,6 +64,17 @@ class Orders extends MY_Model {
     // validate an order
     // it must have at least one item from each category
     function validate($num) {
+        $result = $this->db->query('SELECT DISTINCT category '.
+                            'FROM menu '.
+                            'WHERE category NOT IN '.
+                            '(SELECT category FROM menu '.
+                            'INNER JOIN orderitems '.
+                            'ON menu.code = orderitems.item '.
+                            'WHERE orderitems.order = '. $num .')');
+//        die(var_dump($result->num_rows()));
+        if ($result->num_rows() == 0) {
+            return true;
+        }
         return false;
     }
 
